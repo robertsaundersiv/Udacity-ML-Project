@@ -122,6 +122,8 @@ df.fillna(value=0, inplace=True)
 
 # Provided to give you a starting point. Try a variety of classifiers.
 # Scale the dataset and send it back to a dictionary
+nonscaled_df = df.copy()
+nonscaled_dataset = nonscaled_df.to_dict(orient='index')
 scaled_df = df.copy()
 scaler = MinMaxScaler()
 scaled_df.iloc[:, 1:] = scaler.fit_transform(scaled_df.iloc[:, 1:])
@@ -130,13 +132,13 @@ my_dataset = scaled_df.to_dict(orient='index')
 # Create and test the Gaussian Naive Bayes Classifier
 print('\nNaive Bayes')
 clf = GaussianNB()
-final_project.tester.dump_classifier_and_data(clf, my_dataset, features_list)
+final_project.tester.dump_classifier_and_data(clf, nonscaled_dataset, features_list)
 final_project.tester.main()
 
 # Create and test the Decision Tree Classifier
 print('\nDecision Tree')
 clf = DecisionTreeClassifier()
-final_project.tester.dump_classifier_and_data(clf, my_dataset, features_list)
+final_project.tester.dump_classifier_and_data(clf, nonscaled_dataset, features_list)
 final_project.tester.main()
 
 # Create and test the Support Vector Classifier
@@ -163,7 +165,7 @@ final_project.tester.main()
 # Create and test the Decision Tree Classifier (0.86667, .5, .65) to (.89333, .59091, .65)
 print('\nDecision Tree improved')
 clf = DecisionTreeClassifier(min_samples_leaf=2)
-final_project.tester.dump_classifier_and_data(clf, my_dataset, features_list)
+final_project.tester.dump_classifier_and_data(clf, nonscaled_dataset, features_list)
 final_project.tester.main()
 
 # Create and test the Support Vector Classifier() to (.86667, .5, .15) to (.87333, .52174, .6)
@@ -181,7 +183,7 @@ clf = KMeans(n_clusters=2, n_init=30)
 final_project.tester.dump_classifier_and_data(clf, my_dataset, features_list)
 final_project.tester.main()
 
-print('\nVoting Classifier using new data and Naive Bias and Decision Tree')
+print('\nVoting Classifier with Naive Bias and Decision Tree')
 # left off svc as it actually made the results less accurate and k-means is
 # not a classifier so does not work for this purpose
 # average scores for this are Accuracy: 0.86000	Precision: 0.47826	Recall: 0.55000	F1: 0.51163	F2: 0.53398
@@ -198,12 +200,24 @@ estimators.append(('Decision Tree', clf2))
 # estimators.append(('SVC(poly)', clf3))
 # estimators.append(('k-means', clf4))
 clf = VotingClassifier(estimators)
-final_project.tester.dump_classifier_and_data(clf, my_dataset, features_list)
+final_project.tester.dump_classifier_and_data(clf, nonscaled_dataset, features_list[:-6])
 final_project.tester.main()
 
-# TODO 6: Dump your classifier, dataset, and features_list so anyone can
+
+# final_project.tester.dump_classifier_and_data(clf, my_dataset, ['poi', 'salary', 'bonus', 'deferred_income',
+#                                                                 'exercised_stock_options', 'total_stock_value',
+#                                                                 'shared_receipt_with_poi', 'outbound_poi_ratio',
+#                                                                 'listed_with_poi_ratio', 'bonus_to_salary_ratio',
+#                                                                 'bonus_to_total_income_ratio'])
+# final_project.tester.main()
+
+print('\nVoting Classifier including new features with Naive Bias and Decision Tree')
+final_project.tester.dump_classifier_and_data(clf, nonscaled_dataset, features_list)
+final_project.tester.main()
+
+# 6: Dump your classifier, dataset, and features_list so anyone can
 # check your results. You do not need to change anything below, but make sure
 # that the version of poi_id.py that you submit can be run on its own and
 # generates the necessary .pkl files for validating your results.
 
-final_project.tester.dump_classifier_and_data(clf, my_dataset, features_list)
+final_project.tester.dump_classifier_and_data(clf, nonscaled_dataset, features_list)
